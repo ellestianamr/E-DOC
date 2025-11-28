@@ -1,0 +1,32 @@
+# Sistem & OS
+.DS_Store
+Thumbs.db
+
+# Node/npm (kalau kamu pakai untuk plugin)
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Bower (kalau ada)
+bower_components/
+
+# Folder build (nggak perlu commit)
+build/
+dist/js/*.map
+dist/css/*.map
+
+# File sementara editor
+*.log
+*.tmp
+*.swp
+*.bak
+
+# File upload / cache (jika proyek punya)
+#uploads/
+cache/
+
+bower.json
+composer.json
+package-lock.json
+package.json
+yarn.lock
