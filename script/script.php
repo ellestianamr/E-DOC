@@ -54,6 +54,7 @@
       searching: false,      // nonaktifkan pencarian
       language: {            // opsional: ubah teks jadi Bahasa Indonesia
         search: "Cari:",
+        emptyTable: "Belum ada data",
         zeroRecords: "Tidak ada data yang cocok",
         info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
         infoEmpty: "Tidak ada data tersedia",
@@ -77,6 +78,7 @@
       searching: false,      // nonaktifkan pencarian
       language: {            // opsional: ubah teks jadi Bahasa Indonesia
         search: "Cari:",
+        emptyTable: "Belum ada data",
         zeroRecords: "Tidak ada data yang cocok",
         info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
         infoEmpty: "Tidak ada data tersedia",

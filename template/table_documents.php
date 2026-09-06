@@ -36,6 +36,7 @@ $role = $_SESSION['role_name'] ?? '';
   .action-copy{ background: rgba(0,128,0,0.85); }
   .action-delete{ background: rgba(220,53,69,0.95); }
   .files-table tbody td { vertical-align: middle; }
+  .files-table tbody td.dataTables_empty { text-align: center; color: #888; }
 
   .swal2-popup {
     font-size: 1.4rem !important;
@@ -194,8 +195,6 @@ $role = $_SESSION['role_name'] ?? '';
             </td>
           </tr>
           <?php endforeach; ?>
-        <?php else: ?>
-          <tr><td colspan="6" style="text-align:center; color:#888;">Belum ada data</td></tr>
         <?php endif; ?>
       </tbody>
     </table>
