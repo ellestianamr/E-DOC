@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("db.php");
+include("nlp_client.php"); // penghubung ke service Python (pencarian isi dokumen)
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_user = $_SESSION['user_id'];
@@ -56,6 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (mysqli_query($koneksi, $sql)) {
                         $status = 'success';
                         $message = 'Dokumen berhasil diperbarui (file diganti)!';
+
+                        // File berubah -> isi index lama sudah tidak sesuai,
+                        // jadi dokumen ini di-index ulang dari file barunya.
+                        $index = nlp_index_dokumen($id);
+                        if (!$index['ok']) {
+                            $message .= ' (Catatan: index isi dokumen gagal diperbarui - '
+                                      . $index['error']
+                                      . '. Hasil pencarian masih memakai isi file lama)';
+                        }
                     } else {
                         $message = 'Gagal memperbarui data di database!';
                     }
@@ -69,6 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (mysqli_query($koneksi, $sql)) {
                 $status = 'success';
                 $message = 'Nama dokumen berhasil diperbarui!';
+
+                // Nama dokumen ikut masuk ke index (supaya judul juga bisa
+                // dicari), jadi ganti nama pun perlu index ulang.
+                $index = nlp_index_dokumen($id);
+                if (!$index['ok']) {
+                    $message .= ' (Catatan: index isi dokumen gagal diperbarui - '
+                              . $index['error'] . ')';
+                }
             } else {
                 $message = 'Gagal memperbarui nama dokumen!';
             }

@@ -124,3 +124,43 @@ CREATE TABLE notifications (
 ```
 
 
+
+#### Buat kolom & tabel untuk fitur pencarian isi dokumen (NLTK)
+Fitur pencarian berdasarkan isi dokumen membutuhkan kolom tambahan di tabel `dokumen`
+dan satu tabel baru `dokumen_term` (inverted index).
+
+Kolom tambahan di tabel `dokumen`:
+```
+ALTER TABLE dokumen
+  ADD COLUMN teks_ekstraksi MEDIUMTEXT NULL AFTER ukuran_file,
+  ADD COLUMN total_term INT NOT NULL DEFAULT 0 AFTER teks_ekstraksi,
+  ADD COLUMN indexed_at DATETIME NULL AFTER total_term;
+```
+
+Tabel `dokumen_term` (1 baris = 1 kata dasar di 1 dokumen):
+```
+CREATE TABLE IF NOT EXISTS dokumen_term (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_dokumen INT NOT NULL,
+  term VARCHAR(100) NOT NULL,
+  tf INT NOT NULL DEFAULT 1,
+  CONSTRAINT fk_term_dokumen FOREIGN KEY (id_dokumen)
+    REFERENCES dokumen(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_dokumen_term (id_dokumen, term),
+  KEY idx_term (term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+noted: kedua perintah di atas juga tersedia dalam satu file di `nlp_service/schema_nlp.sql`
+
+## 🔎 Fitur Pencarian Isi Dokumen (NLTK)
+Selain aplikasi PHP, ada service Python kecil di folder `nlp_service/` yang bertugas
+membaca isi file Excel, melakukan preprocessing (case folding, cleaning, tokenizing,
+stopword removal, stemming), lalu menghitung ranking TF-IDF + cosine similarity.
+
+Ringkas cara memasangnya:
+1. `nlp_service/setup.bat` — sekali saja (buat venv, pasang library, unduh data NLTK)
+2. import `nlp_service/schema_nlp.sql` di phpMyAdmin
+3. `nlp_service/start_service.bat` — dijalankan tiap kali memakai aplikasi
+4. `venv\Scripts\python reindex.py` — index dokumen yang sudah terlanjur ada
+
+Penjelasan lengkap beserta contoh input/output tiap tahap ada di **[PANDUAN.md](PANDUAN.md)**.

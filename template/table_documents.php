@@ -7,6 +7,39 @@ if (!isset($data_dokumen)) $data_dokumen = [];
 
 $page = isset($_GET['page']) ? $_GET['page'] : '';
 $role = $_SESSION['role_name'] ?? '';
+
+// ==== TAG KATA KUNCI OTOMATIS ====
+// Diambil 5 kata dasar dengan TF (Term Frequency) tertinggi dari tabel
+// dokumen_term, yaitu hasil preprocessing isi file Excel.
+// Kalau service NLP belum pernah dijalankan, tabelnya kosong dan kolom
+// ini sekadar menampilkan "-", jadi tabel tetap aman ditampilkan.
+$kata_kunci = [];   // [id_dokumen => ['latih', 'kerja', ...]]
+
+$id_dokumen_tampil = [];
+foreach ($data_dokumen as $f) {
+  if (!empty($f['id'])) $id_dokumen_tampil[] = (int) $f['id'];
+}
+
+if (!empty($id_dokumen_tampil) && isset($koneksi)) {
+  // Prepared statement dengan jumlah tanda tanya mengikuti jumlah dokumen
+  $tanda  = implode(',', array_fill(0, count($id_dokumen_tampil), '?'));
+  $sql_kk = "SELECT id_dokumen, term, tf FROM dokumen_term
+             WHERE id_dokumen IN ($tanda)
+             ORDER BY id_dokumen ASC, tf DESC, term ASC";
+
+  if ($stmt_kk = $koneksi->prepare($sql_kk)) {
+    $stmt_kk->bind_param(str_repeat('i', count($id_dokumen_tampil)), ...$id_dokumen_tampil);
+    $stmt_kk->execute();
+    $res_kk = $stmt_kk->get_result();
+    while ($r = $res_kk->fetch_assoc()) {
+      $did = (int) $r['id_dokumen'];
+      if (!isset($kata_kunci[$did])) $kata_kunci[$did] = [];
+      // hasil sudah urut TF terbesar, jadi tinggal ambil 5 pertama
+      if (count($kata_kunci[$did]) < 5) $kata_kunci[$did][] = $r['term'];
+    }
+    $stmt_kk->close();
+  }
+}
 ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -37,6 +70,19 @@ $role = $_SESSION['role_name'] ?? '';
   .action-delete{ background: rgba(220,53,69,0.95); }
   .files-table tbody td { vertical-align: middle; }
   .files-table tbody td.dataTables_empty { text-align: center; color: #888; }
+
+  /* tag kata kunci otomatis (5 kata dasar dengan TF tertinggi) */
+  .tag-kunci {
+    display: inline-block;
+    background: #eaf2f8;
+    color: #145885;
+    border: 1px solid #cfe2f0;
+    border-radius: 11px;
+    padding: 1px 8px;
+    margin: 1px 2px 1px 0;
+    font-size: 11px;
+    white-space: nowrap;
+  }
 
   .swal2-popup {
     font-size: 1.4rem !important;
@@ -163,6 +209,7 @@ $role = $_SESSION['role_name'] ?? '';
         <tr>
           <th>No</th>
           <th>Dokumen</th>
+          <th>Kata Kunci</th>
           <th>Bidang</th>
           <th>Ukuran</th>
           <th>Tgl Dibuat</th>
@@ -176,6 +223,16 @@ $role = $_SESSION['role_name'] ?? '';
           <tr>
             <td><?= $no++ ?></td>
             <td><?= htmlspecialchars($f['nama_dokumen']) ?></td>
+            <td>
+              <?php $kk = $kata_kunci[(int)($f['id'] ?? 0)] ?? []; ?>
+              <?php if (empty($kk)): ?>
+                <span class="text-muted" title="Dokumen ini belum di-index">-</span>
+              <?php else: ?>
+                <?php foreach ($kk as $term): ?>
+                  <span class="tag-kunci"><?= htmlspecialchars($term) ?></span>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </td>
             <td><?= htmlspecialchars($f['bidang']) ?></td>
             <td><?= htmlspecialchars($f['ukuran_file']) ?></td>
             <td><?= date('d/m/Y', strtotime($f['created_at'])) ?></td>

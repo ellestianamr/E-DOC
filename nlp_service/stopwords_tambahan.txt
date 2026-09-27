@@ -1,0 +1,61 @@
+# ============================================================
+# STOPWORD TAMBAHAN (khusus domain dokumen Disnaker / laporan Excel)
+# ------------------------------------------------------------
+# Daftar stopword bawaan NLTK bahasa Indonesia berisi kata umum
+# seperti "yang", "dan", "di". Tapi dokumen kita berupa tabel
+# laporan, jadi ada kata-kata yang sering muncul di HEADER tabel
+# dan tidak membantu membedakan satu dokumen dengan dokumen lain.
+#
+# Cara pakai:
+#   - 1 kata per baris
+#   - baris kosong dan baris diawali "#" diabaikan
+#   - tulis dalam huruf kecil dan BENTUK DASAR (karena penyaringan
+#     dilakukan setelah tahap stemming juga)
+#   - setelah mengubah file ini, restart service Python
+# ============================================================
+
+# --- kata umum di header tabel ---
+no
+nomor
+data
+jumlah
+total
+tahun
+bulan
+tanggal
+tgl
+keterangan
+ket
+nama
+kode
+uraian
+rincian
+daftar
+rekap
+rekapitulasi
+laporan
+lampiran
+halaman
+hal
+urut
+
+# --- satuan & label angka ---
+orang
+buah
+unit
+persen
+rp
+jt
+ribu
+juta
+milyar
+miliar
+
+# --- kata penghubung tabel yang lolos dari stopword NLTK ---
+dst
+dll
+sd
+kk
+yaitu
+adalah
+merupakan

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("db.php");
+include("nlp_client.php"); // penghubung ke service Python (pencarian isi dokumen)
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_user = $_SESSION['user_id'];
@@ -58,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $sql = "INSERT INTO dokumen (id_user, nama_dokumen, bidang, nama_file, ukuran_file) 
                         VALUES ('$id_user', '$nama_dokumen', '$bidang', '$new_name', '$ukuran_kb')";
                 if (mysqli_query($koneksi, $sql)) {
-                  
+                    $id_dokumen_baru = mysqli_insert_id($koneksi);
+
                     foreach ($target_users as $target_id) {
                       mysqli_query($koneksi, "
                         INSERT INTO notifications (id_user, message)
@@ -68,6 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     $status = 'success';
                     $message = 'Upload berhasil!';
+
+                    // --- Indexing isi Excel lewat service Python ---
+                    // Kalau service mati, upload TETAP dianggap berhasil.
+                    // User hanya diberi tahu bahwa dokumen ini belum bisa
+                    // ditemukan lewat menu Pencarian Dokumen.
+                    $index = nlp_index_dokumen($id_dokumen_baru);
+                    if (!$index['ok']) {
+                        $message .= ' (Catatan: indexing isi dokumen gagal - '
+                                  . $index['error']
+                                  . '. Dokumen belum bisa dicari berdasarkan isinya. '
+                                  . 'Nyalakan service NLP lalu jalankan reindex.py)';
+                    }
                 } else {
                     $message = 'Gagal menyimpan ke database!';
                 }

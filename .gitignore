@@ -30,3 +30,16 @@ composer.json
 package-lock.json
 package.json
 yarn.lock
+
+# Service Python (NLP)
+nlp_service/venv/
+nlp_service/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Cadangan dokumen contoh (bisa dibuat ulang dengan seed_sample_data.py)
+nlp_service/contoh_cadangan/
+
+# File Excel hasil upload tidak ikut di-commit
+uploads/**/*.xlsx
+uploads/**/*.xls

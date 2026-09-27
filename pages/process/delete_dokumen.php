@@ -1,5 +1,6 @@
 <?php
 include("db.php");
+include("nlp_client.php"); // penghubung ke service Python (pencarian isi dokumen)
 
 header('Content-Type: application/json');
 
@@ -22,6 +23,11 @@ $file_path = "../../uploads/" . strtolower($data['bidang']) . "/" . $data['nama_
 
 // Hapus file fisik
 if (file_exists($file_path)) unlink($file_path);
+
+// Hapus index di service Python lebih dulu.
+// Kalau service mati pun aman: tabel dokumen_term punya ON DELETE CASCADE,
+// jadi term-nya tetap ikut terhapus saat baris dokumen dihapus di bawah.
+nlp_hapus_index($id);
 
 // Hapus dari database
 if (mysqli_query($koneksi, "DELETE FROM dokumen WHERE id = '$id'")) {

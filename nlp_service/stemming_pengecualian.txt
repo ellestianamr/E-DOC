@@ -1,0 +1,22 @@
+# ============================================================
+# PENGECUALIAN STEMMING
+# ------------------------------------------------------------
+# Sastrawi bekerja dengan aturan pemotongan imbuhan, jadi sesekali
+# ada kata yang "kebablasan" dipotong (over-stemming).
+# Contoh nyata di data kita:
+#       peserta  -> serta   (salah, dan "serta" malah jadi stopword,
+#                            sehingga kata "peserta" hilang sama sekali)
+#
+# File ini dipakai untuk memaksa hasil stemming kata tertentu.
+#
+# Format : kata_asli=bentuk_dasar_yang_diinginkan
+# Contoh : peserta=peserta
+#
+# Baris kosong dan baris diawali "#" diabaikan.
+# Setelah mengubah file ini, panggil POST /reload-stopwords
+# atau restart service Python.
+# ============================================================
+
+peserta=peserta
+pesertanya=peserta
+perserta=peserta

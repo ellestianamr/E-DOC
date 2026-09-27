@@ -16,6 +16,12 @@
         case 'rekapan_tahunan':
         echo "";
         break;
+        case 'pencarian':
+        echo "Pencarian <b>Dokumen</b>";
+        break;
+        case 'preprocessing':
+        echo "Proses <b>Preprocessing</b>";
+        break;
         case 'settings_users':
         echo "Pengaturan User";
         break;

@@ -13,6 +13,16 @@
             <i class="fa fa-calendar"></i> <span>Rekapan Tahunan</span>
           </a>
         </li>
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'pencarian') ? 'active' : '' ?>">
+          <a href="index.php?page=pencarian">
+            <i class="fa fa-search"></i> <span>Pencarian Dokumen</span>
+          </a>
+        </li>
+        <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'preprocessing') ? 'active' : '' ?>">
+          <a href="index.php?page=preprocessing">
+            <i class="fa fa-cogs"></i> <span>Proses Preprocessing</span>
+          </a>
+        </li>
         <?php if ($_SESSION['role_name'] == 'admin'): ?>
         <li class="<?= (isset($_GET['page']) && $_GET['page'] == 'settings_users') ? 'active' : '' ?>">
           <a href="index.php?page=settings_users">
